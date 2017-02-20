@@ -28,6 +28,12 @@ namespace Oppenheimer
         {
             InitializeComponent();
 
+            loadList();
+        }
+
+
+        public void loadList()
+        {
             applications = new ObservableCollection<CheckedListItem<application>>();
 
             applications.Add(new CheckedListItem<application>(new application() { name = "Chrome Browser", imagename = "chrome" }));

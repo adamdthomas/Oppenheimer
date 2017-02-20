@@ -5,15 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer" Height="350" Width="525">
+        Title="Oppenheimer v 0.1.0" Height="350" Width="525" Icon="favicon.ico">
     <Grid>
-        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="277" Margin="10,10,0,0" VerticalAlignment="Top" Width="500" SelectionChanged="listBox_SelectionChanged">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="207*"/>
+            <ColumnDefinition Width="310*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="277" Margin="10,10,0,0" VerticalAlignment="Top" Width="500" SelectionChanged="listBox_SelectionChanged" Grid.ColumnSpan="2">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Path=Item.name}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button x:Name="btnKill" Content="I am become death, the destroyer of apps." HorizontalAlignment="Left" Margin="10,292,0,0" VerticalAlignment="Top" Width="500" Click="btnKill_Click"/>
+        <Button x:Name="btnKill" Content="I am become death, the destroyer of apps." HorizontalAlignment="Left" Margin="10,292,0,0" VerticalAlignment="Top" Width="500" Click="btnKill_Click" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>
