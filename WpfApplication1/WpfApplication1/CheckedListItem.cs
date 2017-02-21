@@ -29,7 +29,7 @@ namespace Oppenheimer
             set
             {
                 item = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("Item"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item"));
             }
         }
 
@@ -40,7 +40,7 @@ namespace Oppenheimer
             set
             {
                 isChecked = value;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsChecked"));
             }
         }
     }

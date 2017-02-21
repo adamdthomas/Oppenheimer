@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Oppenheimer
 {
-    public class application
+    public class Application
     {
         public string name { get; set;}
         public string imagename { get; set; }
-
+        public string isCheckedString { get; set; }
     }
 }

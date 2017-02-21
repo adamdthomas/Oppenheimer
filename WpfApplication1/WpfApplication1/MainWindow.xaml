@@ -5,19 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v 0.1.0" Height="350" Width="525" Icon="favicon.ico">
+        Title="Oppenheimer v1.0.0" Height="392" Width="554" Icon="favicon.ico" Closing="Window_Closing">
+
+    <Window.Resources>
+        <ContextMenu x:Key="NotifierContextMenu"
+                    Placement="MousePoint">
+            <MenuItem Header="Kill Processes" Click="Menu_Open"/>
+            <MenuItem Header="Close" Click="Menu_Close"/>
+        </ContextMenu>
+    </Window.Resources>
+
     <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF49545F" Offset="0.481"/>
+                <GradientStop Color="White"/>
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="207*"/>
             <ColumnDefinition Width="310*"/>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="277" Margin="10,10,0,0" VerticalAlignment="Top" Width="500" SelectionChanged="listBox_SelectionChanged" Grid.ColumnSpan="2">
+        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="254" Margin="10,33,0,0" VerticalAlignment="Top" Width="181" SelectionChanged="listBox_SelectionChanged" SelectionMode="Multiple">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Path=Item.name}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button x:Name="btnKill" Content="I am become death, the destroyer of apps." HorizontalAlignment="Left" Margin="10,292,0,0" VerticalAlignment="Top" Width="500" Click="btnKill_Click" Grid.ColumnSpan="2"/>
+        <Button x:Name="btnKill"  HorizontalAlignment="Left" Margin="10,292,0,0" VerticalAlignment="Top" Width="123" Click="btnKill_Click" Height="45" Content="Kill Processes" ToolTip="I am become death, destroyer of processes."/>
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="327" Margin="196,10,0,0" VerticalAlignment="Top" Width="333" Grid.ColumnSpan="2">
+            <TabItem Header="Log">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="11*"/>
+                        <ColumnDefinition Width="34*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="txtLog" HorizontalAlignment="Left" Height="254" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="307" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnClearLog" Content="Clear" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="116" Grid.ColumnSpan="2" Click="btnClearLog_Click"/>
+                    <Button x:Name="btnOpenLog" Content="Open" HorizontalAlignment="Left" Margin="54,269,0,0" VerticalAlignment="Top" Width="116" Grid.Column="1" Click="btnOpenLog_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Add Targets">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="317*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnAdd" Content="Add" HorizontalAlignment="Left" Margin="0,269,0,0" VerticalAlignment="Top" Width="75" Click="btnAdd_Click" Grid.Column="1"/>
+                    <Label x:Name="label1" Content="Display Name" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Label x:Name="label2" Content="Process Name" HorizontalAlignment="Left" Margin="0,41,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="txtDisplayName" HorizontalAlignment="Left" Height="23" Margin="108,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="129" Grid.Column="1"/>
+                    <TextBox x:Name="txtImageName" HorizontalAlignment="Left" Height="23" Margin="108,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="129" Grid.Column="1"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Label x:Name="label" Content="Targets" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="80"/>
+        <Button x:Name="btnRemove" Content="Remove" HorizontalAlignment="Left" Margin="138,292,0,0" VerticalAlignment="Top" Width="53" Click="btnRemove_Click" Height="45"/>
     </Grid>
 </Window>
