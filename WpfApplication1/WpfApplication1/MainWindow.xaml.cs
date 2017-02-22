@@ -138,6 +138,12 @@ namespace Oppenheimer
             {
                 Process[] myProcesses;
                 myProcesses = Process.GetProcessesByName(ProcessName);
+
+                if (myProcesses.Length == 0)
+                {
+                    LogFromThread("Process: " + ProcessName + ".exe not found.");
+                }
+                
                 foreach (Process p in myProcesses)
                 {
                     LogFromThread("Killing process "+ p.ProcessName + ": " + p.Id);
