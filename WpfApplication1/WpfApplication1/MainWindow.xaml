@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v1.1.0" Height="392" Width="596" Icon="favicon.ico" Closing="Window_Closing">
+        Title="Oppenheimer v1.2.1" Height="392" Width="596" Icon="favicon.ico" Closing="Window_Closing">
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"
                     Placement="MousePoint">
             <MenuItem Header="Kill Processes" Click="Menu_Open"/>
+            <MenuItem Header="Expand" Click="Menu_Expand"/>
+            <MenuItem Header="Cancel" Click="Menu_Cancel"/>
             <MenuItem Header="Close" Click="Menu_Close"/>
         </ContextMenu>
     </Window.Resources>

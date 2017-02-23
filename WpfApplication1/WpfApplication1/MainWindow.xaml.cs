@@ -43,7 +43,7 @@ namespace Oppenheimer
                 this.notifier.Icon = ni.Icon;
                 this.notifier.Visible = true;
 
-                ni.Visible = true;
+                //ni.Visible = true;
                 ni.DoubleClick +=
                     delegate (object sender, EventArgs args)
                     {
@@ -89,6 +89,19 @@ namespace Oppenheimer
         private void Menu_Open(object sender, RoutedEventArgs e)
         {
             kill();
+        }
+
+        private void Menu_Expand(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+            this.WindowState = WindowState.Normal;
+        }
+
+
+        private void Menu_Cancel(object sender, RoutedEventArgs e)
+        {
+            ContextMenu menu = (ContextMenu)this.FindResource("NotifierContextMenu");
+            menu.IsOpen = false;
         }
 
         private void Menu_Close(object sender, RoutedEventArgs e)

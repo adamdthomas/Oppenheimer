@@ -23,7 +23,7 @@ namespace Oppenheimer
             {
                 try
                 {
-                    string[] appDetailsArray = app.Split('-');
+                    string[] appDetailsArray = app.Split('~');
                     Application curApp = new Application();
                     curApp.name = appDetailsArray[0];
                     curApp.imagename = appDetailsArray[1];
@@ -52,7 +52,7 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "-" + imageName + "-true";
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~true";
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
@@ -70,7 +70,7 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "-" + imageName + "-" + isChecked;
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~" + isChecked;
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
@@ -80,8 +80,8 @@ namespace Oppenheimer
         public static void RemoveApp(string displayName, string imageName, string isCheckedString)
         {
             string appString = Properties.Settings.Default.Apps;
-            appString = appString.Replace(displayName + "-" + imageName + "-" + isCheckedString + ",", "");
-            appString = appString.Replace(displayName + "-" + imageName + "-" + isCheckedString, "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + ",", "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString, "");
             Properties.Settings.Default.Apps = appString;
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();

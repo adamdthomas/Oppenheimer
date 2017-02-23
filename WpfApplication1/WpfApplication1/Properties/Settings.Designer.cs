@@ -25,7 +25,7 @@ namespace Oppenheimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Chrome Browser-chrome-true,Chrome Driver-chromedriver-false")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Chrome Browser~chrome~true,Chrome Driver~chromedriver~false")]
         public string Apps {
             get {
                 return ((string)(this["Apps"]));
