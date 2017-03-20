@@ -33,7 +33,7 @@ namespace Oppenheimer
 
             if (ckbOpenMinimized.IsChecked.GetValueOrDefault())
             {
-               // Minimize();
+               Minimize();
             }
 
             WriteToLog("Welcome to Oppenheimer.");
