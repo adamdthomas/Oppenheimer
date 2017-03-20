@@ -46,5 +46,17 @@ namespace Oppenheimer.Properties {
                 this["LogPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MinOnOpen {
+            get {
+                return ((bool)(this["MinOnOpen"]));
+            }
+            set {
+                this["MinOnOpen"] = value;
+            }
+        }
     }
 }

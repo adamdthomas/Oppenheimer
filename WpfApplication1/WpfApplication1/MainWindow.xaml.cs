@@ -28,6 +28,14 @@ namespace Oppenheimer
             Utilities.CreateLogFile();
             //m_menu = new ContextMenu();
             loadList();
+
+            ckbOpenMinimized.IsChecked = Properties.Settings.Default.MinOnOpen;
+
+            if (ckbOpenMinimized.IsChecked.GetValueOrDefault())
+            {
+               // Minimize();
+            }
+
             WriteToLog("Welcome to Oppenheimer.");
 
             try
@@ -88,7 +96,7 @@ namespace Oppenheimer
 
         private void Menu_Open(object sender, RoutedEventArgs e)
         {
-            kill();
+            killApps();
         }
 
         private void Menu_Expand(object sender, RoutedEventArgs e)
@@ -97,6 +105,11 @@ namespace Oppenheimer
             this.WindowState = WindowState.Normal;
         }
 
+        private void Minimize()
+        {
+            this.Hide();
+            this.WindowState = WindowState.Minimized;
+        }
 
         private void Menu_Cancel(object sender, RoutedEventArgs e)
         {
@@ -113,20 +126,73 @@ namespace Oppenheimer
             catch (Exception) { }
         }
 
-
-        public void kill()
+        public void killApps()
         {
             foreach (var app in applications)
             {
                 if (app.IsChecked)
                 {
-                    Boom(app.Item.imagename);
+                    killApp(app.Item.imagename);
+                }
+            }
+        }
+
+        public void killApp(string ProcessName)
+        {
+            if(ProcessName.Contains(@"/"))
+            {
+                LogFromThread("Did you mean to use a forward slash in the path: " + ProcessName + "?");
+                ProcessName = "";
+            }
+
+            if (ProcessName.Contains(@"\"))
+            {
+
+                string lastchar = ProcessName.Substring(ProcessName.Length - 1);
+                if (lastchar != @"\")
+                {
+                    ProcessName = ProcessName + @"\";
+                }
+                //Saftey Nets:
+                if (ProcessName.ToUpper() == @"C:\" || ProcessName.ToUpper() == @"C:\PROGRAM FILES\" || ProcessName.ToUpper() == @"C:\PROGRAM FILES (X86)\" || ProcessName.ToUpper() == @"C:\PROGRAMDATA\" || ProcessName.ToUpper() == @"C:\USERS\" || ProcessName.ToUpper() == @"C:\WINDOWS\")
+                {
+                    LogFromThread("Cannot delete the contents of: " + ProcessName + " are you out of your mind???");
+                }
+                else
+                {
+                    LogFromThread("Deleting the contents of: " + ProcessName);
+                    Utilities.RemoveFiles(ProcessName);
+                }
+            }
+            else
+            {
+                if (ProcessName != "")
+                {
+                    try
+                    {
+                        Process[] myProcesses;
+                        myProcesses = Process.GetProcessesByName(ProcessName);
+
+                        if (myProcesses.Length == 0)
+                        {
+                            LogFromThread("Process: " + ProcessName + ".exe not found.");
+                        }
+
+                        foreach (Process p in myProcesses)
+                        {
+                            LogFromThread("Killing process " + p.ProcessName + ": " + p.Id);
+                            p.Kill();
+                        }
+                    }
+                    catch (Exception ex) { }
                 }
             }
         }
 
         public void updateSettings()
         {
+
+
             Utilities.RemoveAllApps();
 
             foreach (var app in applications)
@@ -143,27 +209,8 @@ namespace Oppenheimer
 
                 Utilities.AddApp(app.Item.name, app.Item.imagename, check);
             }
-        }
 
-        public void Boom(string ProcessName)
-        {
-            try
-            {
-                Process[] myProcesses;
-                myProcesses = Process.GetProcessesByName(ProcessName);
 
-                if (myProcesses.Length == 0)
-                {
-                    LogFromThread("Process: " + ProcessName + ".exe not found.");
-                }
-                
-                foreach (Process p in myProcesses)
-                {
-                    LogFromThread("Killing process "+ p.ProcessName + ": " + p.Id);
-                    p.Kill();
-                }
-            }
-            catch (Exception ex) { }
         }
 
         public void loadList()
@@ -197,7 +244,7 @@ namespace Oppenheimer
 
         private void btnKill_Click(object sender, RoutedEventArgs e)
         {
-            kill();
+            killApps();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -237,6 +284,50 @@ namespace Oppenheimer
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             updateSettings();
+        }
+
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            Minimize();
+        }
+
+        private void ckbOpenMinimized_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ckbOpenMinimized_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.MinOnOpen = ckbOpenMinimized.IsChecked.GetValueOrDefault();
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e)
+        {
+            txtExport.Text = Properties.Settings.Default.Apps;
+            Clipboard.SetText(Properties.Settings.Default.Apps);
+            lblStatus.Content = "Exported targets copied to clipboard...";
+            WriteToLog("Exporting targets: '" + Properties.Settings.Default.Apps + "'");
+
+        }
+
+        private void btnImport_Click(object sender, RoutedEventArgs e)
+        {
+            if (Utilities.TestAppString(txtExport.Text))
+            {
+                Properties.Settings.Default.Apps = txtExport.Text;
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Reload();
+                loadList();
+                lblStatus.Content = "Import Successful...";
+                WriteToLog("Importing targets: '" + txtExport.Text + "'");
+            }
+            else
+            {
+                lblStatus.Content = "Could not import. Bad string structure";
+                WriteToLog("Error importing targets: '" + txtExport.Text + "'");
+            }
         }
     }
 }

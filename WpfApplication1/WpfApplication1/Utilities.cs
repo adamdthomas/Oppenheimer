@@ -41,6 +41,30 @@ namespace Oppenheimer
             return apps;
         }
 
+        public static bool TestAppString(string appString)
+        {
+            bool testPassed = true;
+                try
+                {
+                    string[] appArray = appString.Split(',');
+
+                    foreach (var app in appArray)
+                    {
+                            string[] appDetailsArray = app.Split('~');
+                            string iamaname = appDetailsArray[0];
+                            string iamanimage = appDetailsArray[1];
+                            string iamachecked = appDetailsArray[2];
+                    }
+            }
+            catch (Exception)
+            {
+
+                testPassed = false;
+            }
+
+            return testPassed;
+        }
+
         public static void AddApp(string displayName, string imageName)
         {
             string firstDelim = "";
@@ -107,9 +131,7 @@ namespace Oppenheimer
                     sw.Close();
                 }
             }
-        }
-
-        
+        }   
 
         public static void LogToFile(string Message)
         {
@@ -127,7 +149,23 @@ namespace Oppenheimer
             }
         }
 
+        public static void RemoveFiles(string Path)
+        {
+            try
+            {
+                System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
+                foreach (FileInfo file in directory.GetFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
+                {
+                    currentDirectory.Delete(true);
+                }
+            }
+            catch (Exception){}
 
+        }
 
     }
 }
