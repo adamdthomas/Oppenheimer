@@ -24,6 +24,11 @@ namespace Oppenheimer
 
         public MainWindow()
         {
+
+            //-----------------DEBUG------------------------
+            Properties.Settings.Default.MinOnOpen = false;
+            //----------------------------------------------
+
             InitializeComponent();
             Utilities.CreateLogFile();
             //m_menu = new ContextMenu();
@@ -69,6 +74,14 @@ namespace Oppenheimer
             txtLog.AppendText(Message + L);
             Utilities.LogToFile(Message);
             txtLog.ScrollToEnd();
+        }
+
+        public void WriteToLog(List<string> Messages)
+        {
+            foreach (var Message in Messages)
+            {
+                WriteToLog(Message);
+            }
         }
 
         public void LogFromThread(string Message)
@@ -161,7 +174,7 @@ namespace Oppenheimer
                 else
                 {
                     LogFromThread("Deleting the contents of: " + ProcessName);
-                    Utilities.RemoveFiles(ProcessName);
+                    WriteToLog(Utilities.RemoveFiles(ProcessName));
                 }
             }
             else

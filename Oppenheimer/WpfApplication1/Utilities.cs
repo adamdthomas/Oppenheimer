@@ -149,22 +149,29 @@ namespace Oppenheimer
             }
         }
 
-        public static void RemoveFiles(string Path)
+        public static List<string> RemoveFiles(string Path)
         {
+            List<string> deleteInfo = new List<string>();
+
             try
             {
                 System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
                 foreach (FileInfo file in directory.GetFiles())
                 {
+                    deleteInfo.Add("Deleting file: " + file.FullName);
                     file.Delete();
                 }
                 foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
                 {
+                    deleteInfo.Add("Deleting folder: " + currentDirectory.FullName);
                     currentDirectory.Delete(true);
                 }
             }
-            catch (Exception){}
+            catch (Exception e){
+                deleteInfo.Add("Error: " + e.ToString());
+            }
 
+            return deleteInfo;
         }
 
     }
