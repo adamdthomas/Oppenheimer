@@ -28,6 +28,11 @@ namespace Oppenheimer
                     curApp.name = appDetailsArray[0];
                     curApp.imagename = appDetailsArray[1];
                     curApp.isCheckedString = appDetailsArray[2];
+
+                    curApp.timeInt = appDetailsArray[3];
+                    curApp.timeType = appDetailsArray[4];
+                    curApp.hasAgent = appDetailsArray[5];
+
                     apps.Add(curApp);
                 }
                 catch (Exception)
@@ -54,7 +59,10 @@ namespace Oppenheimer
                             string iamaname = appDetailsArray[0];
                             string iamanimage = appDetailsArray[1];
                             string iamachecked = appDetailsArray[2];
-                    }
+                            string iamatimeint = appDetailsArray[3];
+                            string iamatimetype = appDetailsArray[4];
+                            string iamanagent = appDetailsArray[5];
+                }
             }
             catch (Exception)
             {
@@ -65,8 +73,14 @@ namespace Oppenheimer
             return testPassed;
         }
 
-        public static void AddApp(string displayName, string imageName)
+        public static void AddApp(string displayName, string imageName, string timeInt, string timeType, string hasAgent)
         {
+            string appStr = Properties.Settings.Default.Apps;
+            appStr = appStr.Replace(GetAppStringByDisplayName(displayName), "");
+            Properties.Settings.Default.Apps = appStr;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+
             string firstDelim = "";
             string appString = Properties.Settings.Default.Apps;
             if (appString != "")
@@ -76,15 +90,55 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~true";
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~true~" + timeInt + "~" + timeType + "~" + hasAgent ;
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
-
+       
         }
 
-        public static void AddApp(string displayName, string imageName, string isChecked)
+        public static string GetAppStringByDisplayName(string displayName)
         {
+            string AppStr = "";
+            
+            try
+            {
+                string appString = Properties.Settings.Default.Apps;
+                string[] appArray = appString.Split(',');
+
+                foreach (var app in appArray)
+                {
+
+                    string[] appDetailsArray = app.Split('~');
+
+                    if (displayName.ToUpper() == appDetailsArray[0].ToUpper())
+                    {
+                        AppStr = appDetailsArray[0] + "~" + appDetailsArray[1] + "~" + appDetailsArray[2] + "~" + appDetailsArray[3] + "~" + appDetailsArray[4] + "~" + appDetailsArray[5];
+                        break;
+                    }
+
+ 
+                }
+            }
+            catch (Exception) {}
+
+
+            return AppStr;
+        }
+
+        public static void AddApp(string displayName, string imageName, string isChecked,string timeInt, string timeType, string hasAgent)
+        {
+            string appStr = Properties.Settings.Default.Apps;
+            try
+            {
+                appStr = appStr.Replace(GetAppStringByDisplayName(displayName), "");
+                Properties.Settings.Default.Apps = appStr;
+                Properties.Settings.Default.Save();
+                Properties.Settings.Default.Reload();
+            }
+            catch (Exception){}
+
+
             string firstDelim = "";
             string appString = Properties.Settings.Default.Apps;
             if (appString != "")
@@ -94,18 +148,18 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~" + isChecked;
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~" + isChecked + "~" + timeInt + "~" + timeType + "~" + hasAgent;
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
 
         }
 
-        public static void RemoveApp(string displayName, string imageName, string isCheckedString)
+        public static void RemoveApp(string displayName, string imageName, string isCheckedString, string timeInt, string timeType, string hasAgent)
         {
             string appString = Properties.Settings.Default.Apps;
-            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + ",", "");
-            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString, "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent + ",", "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent, "");
             Properties.Settings.Default.Apps = appString;
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();
@@ -149,8 +203,9 @@ namespace Oppenheimer
             }
         }
 
-        public static List<string> RemoveFiles(string Path)
+        public static List<string> RemoveFiles(string Path, double ageToKill)
         {
+
             List<string> deleteInfo = new List<string>();
 
             try
@@ -158,13 +213,29 @@ namespace Oppenheimer
                 System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
                 foreach (FileInfo file in directory.GetFiles())
                 {
-                    deleteInfo.Add("Deleting file: " + file.FullName);
-                    file.Delete();
+
+                    TimeSpan span = DateTime.Now.Subtract(file.LastWriteTime);
+                    if (span.TotalSeconds > ageToKill)
+                    {
+                        deleteInfo.Add("Deleting file: " + file.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                        file.Delete();
+                    }else
+                    {
+                        deleteInfo.Add("Skipping file: " + file.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                    }
                 }
                 foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
                 {
-                    deleteInfo.Add("Deleting folder: " + currentDirectory.FullName);
-                    currentDirectory.Delete(true);
+                    TimeSpan span = DateTime.Now.Subtract(currentDirectory.LastWriteTime);
+                    if (span.TotalSeconds > ageToKill)
+                    {
+                        deleteInfo.Add("Deleting folder: " + currentDirectory.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                        currentDirectory.Delete(true);
+                    }
+                    else
+                    {
+                        deleteInfo.Add("Skipping folder: " + currentDirectory.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                    }
                 }
             }
             catch (Exception e){
@@ -172,6 +243,31 @@ namespace Oppenheimer
             }
 
             return deleteInfo;
+        }
+
+        public static double ToSeconds(string timeInt, string timeType)
+        {
+            int sec;
+
+            switch (timeType.ToUpper())
+            {
+                case "DAYS":
+                    sec = int.Parse(timeInt) * 86400;
+                    break;
+                case "HOURS":
+                    sec = int.Parse(timeInt) * 3600;
+                    break;
+                case "MINUTES":
+                    sec = int.Parse(timeInt) * 60;
+                    break;
+                case "SECONDS":
+                    sec = int.Parse(timeInt);
+                    break;
+                default:
+                    sec = 0;
+                    break;
+            }
+            return sec;
         }
 
     }

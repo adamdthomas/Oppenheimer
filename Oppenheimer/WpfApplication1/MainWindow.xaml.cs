@@ -12,11 +12,13 @@ namespace Oppenheimer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
         private ContextMenu m_menu;
         public static char c1 = (char)10;
         public static string L = c1.ToString();
+        public string isEnabledTemp = "true";
 
         public ObservableCollection<CheckedListItem<Application>> applications { get; set; }
         private WinForms.NotifyIcon notifier = new WinForms.NotifyIcon();
@@ -145,20 +147,22 @@ namespace Oppenheimer
             {
                 if (app.IsChecked)
                 {
-                    killApp(app.Item.imagename);
+                    killApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
                 }
             }
         }
 
-        public void killApp(string ProcessName)
+        public void killApp(string ProcessName, string timeInt, string timeType)
         {
+            double ageToKill = Utilities.ToSeconds(timeInt, timeType);
+
             if(ProcessName.Contains(@"/"))
             {
                 LogFromThread("Did you mean to use a forward slash in the path: " + ProcessName + "?");
-                ProcessName = "";
+                ProcessName = "";//Ignore bad paths
             }
 
-            if (ProcessName.Contains(@"\"))
+            if (ProcessName.Contains(@"\")) //Deal with files and folders
             {
 
                 string lastchar = ProcessName.Substring(ProcessName.Length - 1);
@@ -174,12 +178,12 @@ namespace Oppenheimer
                 else
                 {
                     LogFromThread("Deleting the contents of: " + ProcessName);
-                    WriteToLog(Utilities.RemoveFiles(ProcessName));
+                    WriteToLog(Utilities.RemoveFiles(ProcessName, ageToKill));
                 }
             }
             else
             {
-                if (ProcessName != "")
+                if (ProcessName != "")//Deal with processes
                 {
                     try
                     {
@@ -193,8 +197,18 @@ namespace Oppenheimer
 
                         foreach (Process p in myProcesses)
                         {
-                            LogFromThread("Killing process " + p.ProcessName + ": " + p.Id);
-                            p.Kill();
+
+                            TimeSpan span = DateTime.Now.Subtract(p.StartTime);
+                            if (span.TotalSeconds > ageToKill)
+                            {
+                                LogFromThread("Killing process " + p.ProcessName + ": " + p.Id + " Age: " + span.TotalMinutes.ToString() + " min.");
+                                p.Kill();
+                            }
+                            else
+                            {
+                                LogFromThread("Skipping process " + p.ProcessName + ": " + p.Id + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                            }
+
                         }
                     }
                     catch (Exception ex) { }
@@ -220,7 +234,7 @@ namespace Oppenheimer
                     check = "false";
                 }
 
-                Utilities.AddApp(app.Item.name, app.Item.imagename, check);
+                Utilities.AddApp(app.Item.name, app.Item.imagename, check, app.Item.timeInt, app.Item.timeType, app.Item.hasAgent);
             }
 
 
@@ -234,7 +248,7 @@ namespace Oppenheimer
 
             foreach (var app in apps)
             {
-                applications.Add(new CheckedListItem<Application>(new Application() { name = app.name, imagename = app.imagename, isCheckedString = app.isCheckedString }));
+                applications.Add(new CheckedListItem<Application>(new Application() { name = app.name, imagename = app.imagename, isCheckedString = app.isCheckedString, timeInt = app.timeInt, timeType = app.timeType, hasAgent = app.hasAgent}));
             }
 
             DataContext = this;
@@ -252,7 +266,23 @@ namespace Oppenheimer
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            updateSettings();
 
+            foreach (CheckedListItem<Application> item in lstApps.SelectedItems)
+            {
+                try
+                {
+                    txtDisplayName.Text = item.Item.name;
+                    txtImageName.Text = item.Item.imagename;
+                    isEnabledTemp = item.Item.isCheckedString;
+                    txtTimeInt.Text = item.Item.timeInt;
+                    cboTimeType.Text = item.Item.timeType;
+                    ckbHasAgent.IsChecked = Convert.ToBoolean(item.Item.hasAgent);
+                }
+                catch (Exception){}
+
+            }
+            //loadList();
         }
 
         private void btnKill_Click(object sender, RoutedEventArgs e)
@@ -264,9 +294,20 @@ namespace Oppenheimer
         {
             updateSettings();
             string proc = txtImageName.Text.Replace(".exe", "");
-            Utilities.AddApp(txtDisplayName.Text, proc);
+            string check;
+            if (ckbHasAgent.IsChecked.GetValueOrDefault())
+            {
+                check = "true";
+            }
+            else
+            {
+                check = "false";
+            }
+            Utilities.AddApp(txtDisplayName.Text, proc, isEnabledTemp, txtTimeInt.Text, cboTimeType.Text, check);
             WriteToLog("Adding target: " + txtDisplayName.Text + " with process name of: " + proc + ".exe");
             loadList();
+            isEnabledTemp = "true";
+
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
@@ -275,7 +316,7 @@ namespace Oppenheimer
 
             foreach (CheckedListItem<Application> item in lstApps.SelectedItems)
             {
-                Utilities.RemoveApp(item.Item.name, item.Item.imagename, item.Item.isCheckedString);
+                Utilities.RemoveApp(item.Item.name, item.Item.imagename, item.Item.isCheckedString, item.Item.timeInt, item.Item.timeType, item.Item.hasAgent);
                 WriteToLog("Removing target: " + item.Item.name + " with process name of: " + item.Item.imagename + ".exe");
             }
             loadList();
@@ -341,6 +382,12 @@ namespace Oppenheimer
                 lblStatus.Content = "Could not import. Bad string structure";
                 WriteToLog("Error importing targets: '" + txtExport.Text + "'");
             }
+        }
+
+        private void txtImageName_Copy_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, e.Text.Length - 1))
+                e.Handled = true;
         }
     }
 }

@@ -11,5 +11,9 @@ namespace Oppenheimer
         public string name { get; set;}
         public string imagename { get; set; }
         public string isCheckedString { get; set; }
+
+        public string timeInt { get; set; }
+        public string timeType { get; set; }
+        public string hasAgent { get; set; }
     }
 }

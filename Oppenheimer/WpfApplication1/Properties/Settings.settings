@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Apps" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Chrome Browser~chrome~true,Chrome Driver~chromedriver~false</Value>
+      <Value Profile="(Default)">Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~false~0~Seconds~false</Value>
     </Setting>
     <Setting Name="LogPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Temp\</Value>
