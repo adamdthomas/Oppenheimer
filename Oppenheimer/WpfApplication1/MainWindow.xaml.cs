@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Reflection;
 using WinForms = System.Windows.Forms;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Oppenheimer
 {
@@ -19,16 +20,21 @@ namespace Oppenheimer
         public static char c1 = (char)10;
         public static string L = c1.ToString();
         public string isEnabledTemp = "true";
+        bool keepKilling = false;
+        public int agentCycleTime = 5000;
+
+
 
         public ObservableCollection<CheckedListItem<Application>> applications { get; set; }
         private WinForms.NotifyIcon notifier = new WinForms.NotifyIcon();
         public delegate void UpdateLogCallback(string message);
+        public delegate void UpdateLogsCallback(List<string> message);
 
         public MainWindow()
         {
 
             //-----------------DEBUG------------------------
-            Properties.Settings.Default.MinOnOpen = false;
+            //Properties.Settings.Default.MinOnOpen = false;
             //----------------------------------------------
 
             InitializeComponent();
@@ -70,6 +76,7 @@ namespace Oppenheimer
 
         }
 
+        #region logging functions
         public void WriteToLog(string Message)
         {
             Message = DateTime.Now.ToString() + " - " + Message;
@@ -93,6 +100,15 @@ namespace Oppenheimer
             new object[] { Message });
         }
 
+        public void LogsFromThread(List<string> Message)
+        {
+            txtLog.Dispatcher.Invoke(
+            new UpdateLogsCallback(this.WriteToLog),
+            new object[] { Message });
+        }
+        #endregion
+
+        #region tray functions
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == System.Windows.WindowState.Minimized)
@@ -118,12 +134,14 @@ namespace Oppenheimer
         {
             this.Show();
             this.WindowState = WindowState.Normal;
+            this.Activate();
         }
 
         private void Minimize()
         {
             this.Hide();
             this.WindowState = WindowState.Minimized;
+
         }
 
         private void Menu_Cancel(object sender, RoutedEventArgs e)
@@ -140,7 +158,9 @@ namespace Oppenheimer
             }
             catch (Exception) { }
         }
+        #endregion
 
+        #region kill functions
         public void killApps()
         {
             foreach (var app in applications)
@@ -149,6 +169,23 @@ namespace Oppenheimer
                 {
                     killApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
                 }
+            }
+        }
+
+        public void agentKillApps()
+        {
+            while (keepKilling)
+            {
+                LogFromThread("Agent running...");
+                foreach (var app in applications)
+                {
+                    if (app.IsChecked && app.Item.hasAgent == "true")
+                    {
+                        LogFromThread("Agent launched for: " + app.Item.imagename);
+                        killApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
+                    }
+                }
+                Thread.Sleep(agentCycleTime);
             }
         }
 
@@ -178,7 +215,7 @@ namespace Oppenheimer
                 else
                 {
                     LogFromThread("Deleting the contents of: " + ProcessName);
-                    WriteToLog(Utilities.RemoveFiles(ProcessName, ageToKill));
+                    LogsFromThread(Utilities.RemoveFiles(ProcessName, ageToKill));
                 }
             }
             else
@@ -215,10 +252,12 @@ namespace Oppenheimer
                 }
             }
         }
+       
+        #endregion
+
 
         public void updateSettings()
         {
-
 
             Utilities.RemoveAllApps();
 
@@ -263,6 +302,8 @@ namespace Oppenheimer
 
             updateSettings();
         }
+
+
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -388,6 +429,34 @@ namespace Oppenheimer
         {
             if (!char.IsDigit(e.Text, e.Text.Length - 1))
                 e.Handled = true;
+        }
+
+
+
+        private void btnDeploy_Click(object sender, RoutedEventArgs e)
+        {
+            
+            Properties.Settings.Default.CycleTimeInt = txtCycle.Text;
+            Properties.Settings.Default.CycleTimeType = cboTimeTypeCycle.Text;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+            agentCycleTime = Utilities.GetCycleTime();
+
+            if (btnDeploy.Content.ToString() == "Deploy Agents")
+            {
+                LogFromThread("Deploying automation agents. Agents will launch every " + txtCycle.Text + " " + cboTimeTypeCycle.Text);
+                Thread killThread = new Thread(agentKillApps);
+                keepKilling = true;
+                killThread.Start();
+                btnDeploy.Content = "Stop Agents";
+            }
+            else
+            {
+                LogFromThread("Stopping automation agents...");
+                keepKilling = false;
+                btnDeploy.Content = "Deploy Agents";
+            }
+
         }
     }
 }

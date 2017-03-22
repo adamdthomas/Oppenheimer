@@ -59,5 +59,29 @@ namespace Oppenheimer.Properties {
                 this["MinOnOpen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public string CycleTimeInt {
+            get {
+                return ((string)(this["CycleTimeInt"]));
+            }
+            set {
+                this["CycleTimeInt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Seconds")]
+        public string CycleTimeType {
+            get {
+                return ((string)(this["CycleTimeType"]));
+            }
+            set {
+                this["CycleTimeType"] = value;
+            }
+        }
     }
 }

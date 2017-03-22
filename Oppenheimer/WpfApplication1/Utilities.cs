@@ -270,5 +270,10 @@ namespace Oppenheimer
             return sec;
         }
 
+        public static int GetCycleTime()
+        {
+            return Convert.ToInt32(ToSeconds(Properties.Settings.Default.CycleTimeInt, Properties.Settings.Default.CycleTimeType)) * 1000;
+        }
+
     }
 }
