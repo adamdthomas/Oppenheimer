@@ -83,5 +83,17 @@ namespace Oppenheimer.Properties {
                 this["CycleTimeType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AgentOnOpen {
+            get {
+                return ((bool)(this["AgentOnOpen"]));
+            }
+            set {
+                this["AgentOnOpen"] = value;
+            }
+        }
     }
 }

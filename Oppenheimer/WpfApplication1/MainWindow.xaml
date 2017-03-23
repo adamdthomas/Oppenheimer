@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v1.5.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
+        Title="Oppenheimer v1.6.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"
@@ -28,7 +28,7 @@
             <ColumnDefinition Width="207*"/>
             <ColumnDefinition Width="310*"/>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="254" Margin="10,33,0,0" VerticalAlignment="Top" Width="181" SelectionChanged="listBox_SelectionChanged" SelectionMode="Multiple">
+        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="254" Margin="10,33,0,0" VerticalAlignment="Top" Width="181" SelectionChanged="listBox_SelectionChanged" SelectionMode="Extended">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Path=Item.name}" />
@@ -65,15 +65,16 @@
                     <Button x:Name="btnImport" Content="Import" Grid.Column="1" HorizontalAlignment="Left" Margin="76,204,0,0" VerticalAlignment="Top" Width="68" Height="23" Click="btnImport_Click"/>
                     <Label x:Name="lblStatus" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="0,263,0,0" VerticalAlignment="Top" Width="460" Background="White"/>
                     <Label x:Name="label2_Copy2" Content="Status" HorizontalAlignment="Left" Margin="10,232,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="100"/>
-                    <Label x:Name="label2_Copy1" Content="Kill if older than" HorizontalAlignment="Left" Margin="0,63,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-                    <TextBox x:Name="txtTimeInt" HorizontalAlignment="Left" Height="23" Margin="138,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="0" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
-                    <ComboBox x:Name="cboTimeType" Grid.Column="1" HorizontalAlignment="Left" Margin="187,66,0,0" VerticalAlignment="Top" Width="118" SelectedIndex="3">
+                    <Label x:Name="label2_Copy1" Content="Kill if older than" HorizontalAlignment="Left" Margin="195,64,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="txtTimeInt" HorizontalAlignment="Left" Height="22" Margin="293,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="0" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <ComboBox x:Name="cboTimeType" Grid.Column="1" HorizontalAlignment="Left" Margin="342,66,0,0" VerticalAlignment="Top" Width="118" SelectedIndex="3">
                         <ComboBoxItem Content="Days"/>
                         <ComboBoxItem Content="Hours"/>
                         <ComboBoxItem Content="Minutes"/>
                         <ComboBoxItem Content="Seconds"/>
                     </ComboBox>
-                    <CheckBox x:Name="ckbHasAgent" Content="Automation Agent" Grid.Column="1" HorizontalAlignment="Left" Margin="310,70,0,0" VerticalAlignment="Top" Height="22"/>
+                    <CheckBox x:Name="ckbHasAgent" Content="Automation Agent" Grid.Column="1" HorizontalAlignment="Left" Margin="4,66,0,0" VerticalAlignment="Top" Height="22"/>
+                    <CheckBox x:Name="ckbEnableTarget" Content="Enable Target" Grid.Column="1" HorizontalAlignment="Left" Margin="4,86,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="___No_Name_" Header="Options" Margin="-2,0">
@@ -83,7 +84,7 @@
                         <ColumnDefinition Width="317*"/>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="btnMinimize" Content="Minimize to Tray" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="120" Click="btnMinimize_Click" Grid.ColumnSpan="2"/>
-                    <CheckBox x:Name="ckbOpenMinimized" Content="Hide when opened" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Checked="ckbOpenMinimized_Checked" Click="ckbOpenMinimized_Click" Grid.ColumnSpan="2"/>
+                    <CheckBox x:Name="ckbOpenMinimized" Content="Minimize to tray when opened" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Checked="ckbOpenMinimized_Checked" Click="ckbOpenMinimized_Click" Grid.ColumnSpan="2"/>
                     <Button x:Name="btnDeploy" Content="Deploy Agents" HorizontalAlignment="Left" Margin="120,269,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" Click="btnDeploy_Click"/>
                     <Label x:Name="label2_Copy3" Content="Agent cycles every" HorizontalAlignment="Left" Margin="5,14,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="txtCycle" HorizontalAlignment="Left" Height="23" Margin="102,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="30" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
@@ -101,6 +102,7 @@
                         <ComboBoxItem Content="Minutes"/>
                         <ComboBoxItem Content="Seconds"/>
                     </ComboBox>
+                    <CheckBox x:Name="ckbAgentsOnOpen" Content="Depoly agents when opened" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Click="ckbAgentsOnOpen_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

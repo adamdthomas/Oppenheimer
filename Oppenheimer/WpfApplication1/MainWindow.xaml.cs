@@ -49,6 +49,15 @@ namespace Oppenheimer
                Minimize();
             }
 
+
+            ckbAgentsOnOpen.IsChecked = Properties.Settings.Default.AgentOnOpen;
+
+            if (ckbAgentsOnOpen.IsChecked.GetValueOrDefault())
+            {
+                Deploy();
+            }
+
+
             WriteToLog("Welcome to Oppenheimer.");
 
             try
@@ -319,6 +328,7 @@ namespace Oppenheimer
                     txtTimeInt.Text = item.Item.timeInt;
                     cboTimeType.Text = item.Item.timeType;
                     ckbHasAgent.IsChecked = Convert.ToBoolean(item.Item.hasAgent);
+                    ckbEnableTarget.IsChecked = item.IsChecked;
                 }
                 catch (Exception){}
 
@@ -335,19 +345,30 @@ namespace Oppenheimer
         {
             updateSettings();
             string proc = txtImageName.Text.Replace(".exe", "");
-            string check;
+            string checkHasAgent;
             if (ckbHasAgent.IsChecked.GetValueOrDefault())
             {
-                check = "true";
+                checkHasAgent = "true";
             }
             else
             {
-                check = "false";
+                checkHasAgent = "false";
             }
-            Utilities.AddApp(txtDisplayName.Text, proc, isEnabledTemp, txtTimeInt.Text, cboTimeType.Text, check);
+
+            string checkEnabled;
+            if (ckbEnableTarget.IsChecked.GetValueOrDefault())
+            {
+                checkEnabled = "true";
+            }
+            else
+            {
+                checkEnabled = "false";
+            }
+
+            Utilities.AddApp(txtDisplayName.Text, proc, checkEnabled, txtTimeInt.Text, cboTimeType.Text, checkHasAgent);
             WriteToLog("Adding target: " + txtDisplayName.Text + " with process name of: " + proc + ".exe");
             loadList();
-            isEnabledTemp = "true";
+ 
 
         }
 
@@ -420,7 +441,7 @@ namespace Oppenheimer
             }
             else
             {
-                lblStatus.Content = "Could not import. Bad string structure";
+                lblStatus.Content = "Could not import. Bad string structure. Try using an exported string";
                 WriteToLog("Error importing targets: '" + txtExport.Text + "'");
             }
         }
@@ -431,11 +452,8 @@ namespace Oppenheimer
                 e.Handled = true;
         }
 
-
-
-        private void btnDeploy_Click(object sender, RoutedEventArgs e)
+        public void Deploy()
         {
-            
             Properties.Settings.Default.CycleTimeInt = txtCycle.Text;
             Properties.Settings.Default.CycleTimeType = cboTimeTypeCycle.Text;
             Properties.Settings.Default.Save();
@@ -456,7 +474,20 @@ namespace Oppenheimer
                 keepKilling = false;
                 btnDeploy.Content = "Deploy Agents";
             }
+        }
 
+        private void btnDeploy_Click(object sender, RoutedEventArgs e)
+        {
+
+            Deploy();
+
+        }
+
+        private void ckbAgentsOnOpen_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.AgentOnOpen = ckbAgentsOnOpen.IsChecked.GetValueOrDefault();
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
         }
     }
 }
