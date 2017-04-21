@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v1.6.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
+        Title="Oppenheimer v1.7.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"
@@ -103,6 +103,13 @@
                         <ComboBoxItem Content="Seconds"/>
                     </ComboBox>
                     <CheckBox x:Name="ckbAgentsOnOpen" Content="Depoly agents when opened" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Click="ckbAgentsOnOpen_Click"/>
+                    <Label x:Name="label2_Copy4" Content="Kill Retry Count" HorizontalAlignment="Left" Margin="5,84,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="txtRetryCount" HorizontalAlignment="Left" Height="23" Margin="102,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="1" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <Label x:Name="label2_Copy5" Content="Retry Delay (ms)" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="txtRetryTime" HorizontalAlignment="Left" Height="23" Margin="102,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="250" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <Button x:Name="button" Content="Save Options" Grid.Column="1" HorizontalAlignment="Left" Margin="245,269,0,0" VerticalAlignment="Top" Width="120" Click="button_Click"/>
+                    <Label x:Name="label2_Copy6" Content="Log Path" HorizontalAlignment="Left" Margin="5,140,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="txtLogPath" HorizontalAlignment="Left" Height="23" Margin="102,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Grid.Column="1" Text="C:\Temp\" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
                 </Grid>
             </TabItem>
         </TabControl>

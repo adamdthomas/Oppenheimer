@@ -38,21 +38,17 @@ namespace Oppenheimer
             //----------------------------------------------
 
             InitializeComponent();
-            Utilities.CreateLogFile();
-            //m_menu = new ContextMenu();
-            loadList();
 
-            ckbOpenMinimized.IsChecked = Properties.Settings.Default.MinOnOpen;
+            loadList();
+            updateFields();
+            Utilities.CreateLogFile();
 
             if (ckbOpenMinimized.IsChecked.GetValueOrDefault())
             {
                Minimize();
             }
 
-
-            ckbAgentsOnOpen.IsChecked = Properties.Settings.Default.AgentOnOpen;
-
-            if (ckbAgentsOnOpen.IsChecked.GetValueOrDefault())
+            if(ckbAgentsOnOpen.IsChecked.GetValueOrDefault())
             {
                 Deploy();
             }
@@ -172,6 +168,7 @@ namespace Oppenheimer
         #region kill functions
         public void killApps()
         {
+            LogFromThread("Killing Targets...");
             foreach (var app in applications)
             {
                 if (app.IsChecked)
@@ -233,38 +230,55 @@ namespace Oppenheimer
                 {
                     try
                     {
-                        Process[] myProcesses;
-                        myProcesses = Process.GetProcessesByName(ProcessName);
-
-                        if (myProcesses.Length == 0)
-                        {
-                            LogFromThread("Process: " + ProcessName + ".exe not found.");
-                        }
-
-                        foreach (Process p in myProcesses)
+                        for (int i = 0; i < Convert.ToInt32(txtRetryCount.Text); i++)
                         {
 
-                            TimeSpan span = DateTime.Now.Subtract(p.StartTime);
-                            if (span.TotalSeconds > ageToKill)
+
+                            Process[] myProcesses;
+                            myProcesses = Process.GetProcessesByName(ProcessName);
+
+                            if (myProcesses.Length == 0)
                             {
-                                LogFromThread("Killing process " + p.ProcessName + ": " + p.Id + " Age: " + span.TotalMinutes.ToString() + " min.");
-                                p.Kill();
-                            }
-                            else
-                            {
-                                LogFromThread("Skipping process " + p.ProcessName + ": " + p.Id + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                                LogFromThread("Process: " + ProcessName + ".exe not found.");
                             }
 
+                            foreach (Process p in myProcesses)
+                            {
+
+                                TimeSpan span = DateTime.Now.Subtract(p.StartTime);
+                                if (span.TotalSeconds > ageToKill)
+                                {
+                                    LogFromThread("Killing process " + p.ProcessName + ": " + p.Id + " Age: " + span.TotalMinutes.ToString() + " min.");
+                                    p.Kill();
+                                }
+                                else
+                                {
+                                    LogFromThread("Skipping process " + p.ProcessName + ": " + p.Id + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                                }
+
+                            }
+
+                            Thread.Sleep(Convert.ToInt32(txtRetryTime.Text));
                         }
                     }
                     catch (Exception ex) { }
                 }
             }
         }
-       
+
         #endregion
 
+        public void updateFields()
+        {
+            txtLogPath.Text = Properties.Settings.Default.LogPath;
+            ckbOpenMinimized.IsChecked = Properties.Settings.Default.MinOnOpen;
+            txtCycle.Text = Properties.Settings.Default.CycleTimeInt;
+            cboTimeTypeCycle.Text = Properties.Settings.Default.CycleTimeType;
+            ckbAgentsOnOpen.IsChecked = Properties.Settings.Default.AgentOnOpen;
+            txtRetryTime.Text = Properties.Settings.Default.RetryTime;
+            txtRetryCount.Text = Properties.Settings.Default.RetryCount;
 
+        }
         public void updateSettings()
         {
 
@@ -284,6 +298,16 @@ namespace Oppenheimer
 
                 Utilities.AddApp(app.Item.name, app.Item.imagename, check, app.Item.timeInt, app.Item.timeType, app.Item.hasAgent);
             }
+
+            Properties.Settings.Default.LogPath = txtLogPath.Text;
+            Properties.Settings.Default.MinOnOpen = ckbOpenMinimized.IsChecked.GetValueOrDefault();
+            Properties.Settings.Default.CycleTimeInt = txtCycle.Text;
+            Properties.Settings.Default.CycleTimeType = cboTimeTypeCycle.Text;
+            Properties.Settings.Default.AgentOnOpen = ckbAgentsOnOpen.IsChecked.GetValueOrDefault();
+            Properties.Settings.Default.RetryTime = txtRetryTime.Text;
+            Properties.Settings.Default.RetryCount = txtRetryCount.Text;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
 
 
         }
@@ -444,6 +468,8 @@ namespace Oppenheimer
                 lblStatus.Content = "Could not import. Bad string structure. Try using an exported string";
                 WriteToLog("Error importing targets: '" + txtExport.Text + "'");
             }
+
+            loadList();
         }
 
         private void txtImageName_Copy_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -454,10 +480,8 @@ namespace Oppenheimer
 
         public void Deploy()
         {
-            Properties.Settings.Default.CycleTimeInt = txtCycle.Text;
-            Properties.Settings.Default.CycleTimeType = cboTimeTypeCycle.Text;
-            Properties.Settings.Default.Save();
-            Properties.Settings.Default.Reload();
+            updateSettings();
+
             agentCycleTime = Utilities.GetCycleTime();
 
             if (btnDeploy.Content.ToString() == "Deploy Agents")
@@ -485,9 +509,12 @@ namespace Oppenheimer
 
         private void ckbAgentsOnOpen_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.AgentOnOpen = ckbAgentsOnOpen.IsChecked.GetValueOrDefault();
-            Properties.Settings.Default.Save();
-            Properties.Settings.Default.Reload();
+            updateSettings();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            updateSettings();
         }
     }
 }

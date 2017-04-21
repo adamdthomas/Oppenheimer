@@ -95,5 +95,29 @@ namespace Oppenheimer.Properties {
                 this["AgentOnOpen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RetryTime {
+            get {
+                return ((string)(this["RetryTime"]));
+            }
+            set {
+                this["RetryTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RetryCount {
+            get {
+                return ((string)(this["RetryCount"]));
+            }
+            set {
+                this["RetryCount"] = value;
+            }
+        }
     }
 }
