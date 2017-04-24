@@ -83,9 +83,9 @@
                         <ColumnDefinition Width="10*"/>
                         <ColumnDefinition Width="317*"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="btnMinimize" Content="Minimize to Tray" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="120" Click="btnMinimize_Click" Grid.ColumnSpan="2"/>
+                    <Button x:Name="btnMinimize" Content="Minimize to Tray" HorizontalAlignment="Left" Margin="10,269,0,0" VerticalAlignment="Top" Width="103" Click="btnMinimize_Click" Grid.ColumnSpan="2"/>
                     <CheckBox x:Name="ckbOpenMinimized" Content="Minimize to tray when opened" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Checked="ckbOpenMinimized_Checked" Click="ckbOpenMinimized_Click" Grid.ColumnSpan="2"/>
-                    <Button x:Name="btnDeploy" Content="Deploy Agents" HorizontalAlignment="Left" Margin="120,269,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" Click="btnDeploy_Click"/>
+                    <Button x:Name="btnDeploy" Content="Deploy Agents" HorizontalAlignment="Left" Margin="103,269,0,0" VerticalAlignment="Top" Width="103" Click="btnDeploy_Click" Grid.Column="1"/>
                     <Label x:Name="label2_Copy3" Content="Agent cycles every" HorizontalAlignment="Left" Margin="5,14,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="txtCycle" HorizontalAlignment="Left" Height="23" Margin="102,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="30" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
                     <ComboBox x:Name="cboTimeTypeCycle" Grid.Column="1" HorizontalAlignment="Left" Margin="151,16,0,0" VerticalAlignment="Top" Width="118" SelectedIndex="3" RenderTransformOrigin="0.5,0.5">
@@ -107,9 +107,10 @@
                     <TextBox x:Name="txtRetryCount" HorizontalAlignment="Left" Height="23" Margin="102,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="1" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
                     <Label x:Name="label2_Copy5" Content="Retry Delay (ms)" HorizontalAlignment="Left" Margin="5,112,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="txtRetryTime" HorizontalAlignment="Left" Height="23" Margin="102,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="250" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
-                    <Button x:Name="button" Content="Save Options" Grid.Column="1" HorizontalAlignment="Left" Margin="245,269,0,0" VerticalAlignment="Top" Width="120" Click="button_Click"/>
+                    <Button x:Name="button" Content="Save Options" HorizontalAlignment="Left" Margin="211,269,0,0" VerticalAlignment="Top" Width="103" Click="button_Click" Grid.Column="1"/>
                     <Label x:Name="label2_Copy6" Content="Log Path" HorizontalAlignment="Left" Margin="5,140,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="txtLogPath" HorizontalAlignment="Left" Height="23" Margin="102,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Grid.Column="1" Text="C:\Temp\" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <Button x:Name="btnRestart" Content="Restart PC" Grid.Column="1" HorizontalAlignment="Left" Margin="319,269,0,0" VerticalAlignment="Top" Width="103" Click="btnRestart_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

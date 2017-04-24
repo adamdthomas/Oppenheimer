@@ -336,6 +336,15 @@ namespace Oppenheimer
             updateSettings();
         }
 
+        private static void Restart()
+        {
+            ProcessStartInfo proc = new ProcessStartInfo();
+            proc.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.FileName = "cmd";
+            proc.Arguments = "/C shutdown -f -r -t 3";
+            Process.Start(proc);
+        }
+
 
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -515,6 +524,11 @@ namespace Oppenheimer
         private void button_Click(object sender, RoutedEventArgs e)
         {
             updateSettings();
+        }
+
+        private void btnRestart_Click(object sender, RoutedEventArgs e)
+        {
+            Restart();
         }
     }
 }
