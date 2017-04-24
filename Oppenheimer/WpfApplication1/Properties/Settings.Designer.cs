@@ -25,8 +25,7 @@ namespace Oppenheimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~false~0~Sec" +
-            "onds~false")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~true~0~Seconds~false,Excel~EXCEL.EXE~true~0~Seconds~false,Phantom JS~phantomjs~true~0~Seconds~false,Phantom JS Error~WerFault~true~0~Seconds~false,UFT Helper~HP.UFT.HelperService~true~0~Seconds~false,Internet Explorer~iexplore~true~0~Seconds~false,ALM~ALM-Client~true~0~Seconds~false,UFT Tool~UFT~true~0~Seconds~false,Auto Chrome~chrome~false~5~Minutes~true,Auto Chrome Driver~chromedriver~false~5~Minutes~true")]
         public string Apps {
             get {
                 return ((string)(this["Apps"]));
@@ -98,7 +97,7 @@ namespace Oppenheimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public string RetryTime {
             get {
                 return ((string)(this["RetryTime"]));
@@ -110,7 +109,7 @@ namespace Oppenheimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public string RetryCount {
             get {
                 return ((string)(this["RetryCount"]));

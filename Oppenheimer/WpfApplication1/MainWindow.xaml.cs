@@ -19,6 +19,8 @@ namespace Oppenheimer
         private ContextMenu m_menu;
         public static char c1 = (char)10;
         public static string L = c1.ToString();
+        public static int retryCount;
+        public static int retryDelay;
         public string isEnabledTemp = "true";
         bool keepKilling = false;
         public int agentCycleTime = 5000;
@@ -132,7 +134,7 @@ namespace Oppenheimer
 
         private void Menu_Open(object sender, RoutedEventArgs e)
         {
-            killApps();
+            killMain();
         }
 
         private void Menu_Expand(object sender, RoutedEventArgs e)
@@ -166,15 +168,43 @@ namespace Oppenheimer
         #endregion
 
         #region kill functions
+        public void killMain()
+        {
+            retryCount = Convert.ToInt32(txtRetryCount.Text);
+            retryDelay = Convert.ToInt32(txtRetryTime.Text);
+
+            if (retryCount > 1)
+            {
+                LogFromThread("Killing Targets. Will retry " + txtRetryCount.Text + " times with a delay of " + txtRetryTime.Text + " milliseconds.");
+                Thread killRetry = new Thread(retryKillApps);
+                killRetry.Start();
+            }
+            else
+            {
+                LogFromThread("Killing Targets...");
+                Thread killOnce = new Thread(killApps);
+                killOnce.Start();
+            }
+        }
+
         public void killApps()
         {
-            LogFromThread("Killing Targets...");
             foreach (var app in applications)
             {
                 if (app.IsChecked)
                 {
                     killApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
                 }
+            }
+        }
+
+        public void retryKillApps()
+        {
+            for (int i = 0; i < retryCount; i++)
+            {
+                LogFromThread("Retry count: " + (i+1).ToString());
+                killApps();
+                Thread.Sleep(retryDelay);
             }
         }
 
@@ -230,10 +260,6 @@ namespace Oppenheimer
                 {
                     try
                     {
-                        for (int i = 0; i < Convert.ToInt32(txtRetryCount.Text); i++)
-                        {
-
-
                             Process[] myProcesses;
                             myProcesses = Process.GetProcessesByName(ProcessName);
 
@@ -258,8 +284,6 @@ namespace Oppenheimer
 
                             }
 
-                            Thread.Sleep(Convert.ToInt32(txtRetryTime.Text));
-                        }
                     }
                     catch (Exception ex) { }
                 }
@@ -371,7 +395,7 @@ namespace Oppenheimer
 
         private void btnKill_Click(object sender, RoutedEventArgs e)
         {
-            killApps();
+            killMain();
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

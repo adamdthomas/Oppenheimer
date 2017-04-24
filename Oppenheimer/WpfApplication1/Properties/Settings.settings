@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Apps" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~false~0~Seconds~false</Value>
+      <Value Profile="(Default)">Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~true~0~Seconds~false,Excel~EXCEL.EXE~true~0~Seconds~false,Phantom JS~phantomjs~true~0~Seconds~false,Phantom JS Error~WerFault~true~0~Seconds~false,UFT Helper~HP.UFT.HelperService~true~0~Seconds~false,Internet Explorer~iexplore~true~0~Seconds~false,ALM~ALM-Client~true~0~Seconds~false,UFT Tool~UFT~true~0~Seconds~false,Auto Chrome~chrome~false~5~Minutes~true,Auto Chrome Driver~chromedriver~false~5~Minutes~true</Value>
     </Setting>
     <Setting Name="LogPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Temp\</Value>
@@ -21,10 +21,10 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="RetryTime" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="RetryCount" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
