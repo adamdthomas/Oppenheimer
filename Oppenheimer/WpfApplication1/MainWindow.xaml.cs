@@ -40,9 +40,9 @@ namespace Oppenheimer
             //----------------------------------------------
 
             InitializeComponent();
-
-            loadList();
             updateFields();
+            loadList();
+            
             Utilities.CreateLogFile();
 
             if (ckbOpenMinimized.IsChecked.GetValueOrDefault())
@@ -189,6 +189,7 @@ namespace Oppenheimer
 
         public void killApps()
         {
+            Thread.CurrentThread.IsBackground = true;
             foreach (var app in applications)
             {
                 if (app.IsChecked)
@@ -200,6 +201,7 @@ namespace Oppenheimer
 
         public void retryKillApps()
         {
+            Thread.CurrentThread.IsBackground = true;
             for (int i = 0; i < retryCount; i++)
             {
                 LogFromThread("Retry count: " + (i+1).ToString());
@@ -368,8 +370,6 @@ namespace Oppenheimer
             proc.Arguments = "/C shutdown -f -r -t 3";
             Process.Start(proc);
         }
-
-
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -553,6 +553,16 @@ namespace Oppenheimer
         private void btnRestart_Click(object sender, RoutedEventArgs e)
         {
             Restart();
+        }
+
+        private void btnNew_Click(object sender, RoutedEventArgs e)
+        {
+            txtImageName.Text = "";
+            txtDisplayName.Text = "";
+            ckbHasAgent.IsChecked = false;
+            ckbEnableTarget.IsChecked = true;
+            txtTimeInt.Text = "0";
+         
         }
     }
 }

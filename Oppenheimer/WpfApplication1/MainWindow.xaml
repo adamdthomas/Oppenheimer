@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v1.7.1" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
+        Title="Oppenheimer v1.8.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"
@@ -54,7 +54,7 @@
                         <ColumnDefinition Width="10*"/>
                         <ColumnDefinition Width="317*"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="btnAdd" Content="Save" HorizontalAlignment="Left" Margin="392,10,0,0" VerticalAlignment="Top" Width="68" Click="btnAdd_Click" Grid.Column="1" Height="51"/>
+                    <Button x:Name="btnAdd" Content="Save" HorizontalAlignment="Left" Margin="392,38,0,0" VerticalAlignment="Top" Width="68" Click="btnAdd_Click" Grid.Column="1" Height="23"/>
                     <Label x:Name="label1" Content="Display Name" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Grid.Column="1"/>
                     <Label x:Name="label2" Content="Process Name or Path" HorizontalAlignment="Left" Margin="0,35,0,0" VerticalAlignment="Top" Grid.Column="1"/>
                     <TextBox x:Name="txtDisplayName" HorizontalAlignment="Left" Height="23" Margin="138,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249" Grid.Column="1"/>
@@ -75,6 +75,7 @@
                     </ComboBox>
                     <CheckBox x:Name="ckbHasAgent" Content="Automation Agent" Grid.Column="1" HorizontalAlignment="Left" Margin="4,66,0,0" VerticalAlignment="Top" Height="22"/>
                     <CheckBox x:Name="ckbEnableTarget" Content="Enable Target" Grid.Column="1" HorizontalAlignment="Left" Margin="4,86,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="btnNew" Content="New" HorizontalAlignment="Left" Margin="392,10,0,0" VerticalAlignment="Top" Width="68" Grid.Column="1" Height="23" Click="btnNew_Click"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="___No_Name_" Header="Options" Margin="-2,0">
