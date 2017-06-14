@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
-        Title="Oppenheimer v1.8.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
+        Title="Oppenheimer v2.0.0" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing">
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"
@@ -14,6 +14,7 @@
             <MenuItem Header="Expand" Click="Menu_Expand"/>
             <MenuItem Header="Cancel" Click="Menu_Cancel"/>
             <MenuItem Header="Close" Click="Menu_Close"/>
+            <MenuItem Header="Restart Computer" Click="Menu_Restart"/>
         </ContextMenu>
     </Window.Resources>
 
@@ -28,7 +29,7 @@
             <ColumnDefinition Width="207*"/>
             <ColumnDefinition Width="310*"/>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="254" Margin="10,33,0,0" VerticalAlignment="Top" Width="181" SelectionChanged="listBox_SelectionChanged" SelectionMode="Extended">
+        <ListBox ItemsSource="{Binding applications}"  x:Name="lstApps" HorizontalAlignment="Left" Height="254" Margin="10,33,0,0" VerticalAlignment="Top" Width="181" SelectionChanged="listBox_SelectionChanged" SelectionMode="Extended" MouseLeftButtonUp="lstApps_MouseLeftButtonUp">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Path=Item.name}" />
@@ -54,28 +55,32 @@
                         <ColumnDefinition Width="10*"/>
                         <ColumnDefinition Width="317*"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="btnAdd" Content="Save" HorizontalAlignment="Left" Margin="392,38,0,0" VerticalAlignment="Top" Width="68" Click="btnAdd_Click" Grid.Column="1" Height="23"/>
+                    <Button x:Name="btnAdd" Content="Save" HorizontalAlignment="Left" Margin="392,66,0,0" VerticalAlignment="Top" Width="68" Click="btnAdd_Click" Grid.Column="1" Height="23"/>
                     <Label x:Name="label1" Content="Display Name" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-                    <Label x:Name="label2" Content="Process Name or Path" HorizontalAlignment="Left" Margin="0,35,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Label x:Name="label2" Content="Process Name or Path" HorizontalAlignment="Left" Margin="0,66,0,0" VerticalAlignment="Top" Grid.Column="1"/>
                     <TextBox x:Name="txtDisplayName" HorizontalAlignment="Left" Height="23" Margin="138,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249" Grid.Column="1"/>
-                    <TextBox x:Name="txtImageName" HorizontalAlignment="Left" Height="23" Margin="138,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249" Grid.Column="1"/>
-                    <TextBox x:Name="txtExport" Grid.Column="1" HorizontalAlignment="Left" Height="62" Margin="4,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456"/>
-                    <Label x:Name="label2_Copy" Content="Import/Export Targets:" HorizontalAlignment="Left" Margin="0,106,0,0" VerticalAlignment="Top" Width="154" Grid.Column="1"/>
-                    <Button x:Name="btnExport" Content="Export" Grid.Column="1" HorizontalAlignment="Left" Margin="4,204,0,0" VerticalAlignment="Top" Width="67" Height="23" Click="btnExport_Click"/>
-                    <Button x:Name="btnImport" Content="Import" Grid.Column="1" HorizontalAlignment="Left" Margin="76,204,0,0" VerticalAlignment="Top" Width="68" Height="23" Click="btnImport_Click"/>
+                    <TextBox x:Name="txtImageName" HorizontalAlignment="Left" Height="23" Margin="138,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249" Grid.Column="1"/>
+                    <TextBox x:Name="txtExport" Grid.Column="1" HorizontalAlignment="Left" Height="53" Margin="138,177,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249"/>
+                    <Label x:Name="label2_Copy" Content="Import/Export Targets:" HorizontalAlignment="Left" Margin="0,177,0,0" VerticalAlignment="Top" Width="154" Grid.Column="1"/>
+                    <Button x:Name="btnExport" Content="Export" Grid.Column="1" HorizontalAlignment="Left" Margin="392,177,0,0" VerticalAlignment="Top" Width="68" Height="23" Click="btnExport_Click"/>
+                    <Button x:Name="btnImport" Content="Import" Grid.Column="1" HorizontalAlignment="Left" Margin="392,205,0,0" VerticalAlignment="Top" Width="68" Height="23" Click="btnImport_Click"/>
                     <Label x:Name="lblStatus" Content="" Grid.Column="1" HorizontalAlignment="Left" Margin="0,263,0,0" VerticalAlignment="Top" Width="460" Background="White"/>
                     <Label x:Name="label2_Copy2" Content="Status" HorizontalAlignment="Left" Margin="10,232,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="100"/>
-                    <Label x:Name="label2_Copy1" Content="Kill if older than" HorizontalAlignment="Left" Margin="195,64,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-                    <TextBox x:Name="txtTimeInt" HorizontalAlignment="Left" Height="22" Margin="293,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="0" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
-                    <ComboBox x:Name="cboTimeType" Grid.Column="1" HorizontalAlignment="Left" Margin="342,66,0,0" VerticalAlignment="Top" Width="118" SelectedIndex="3">
+                    <Label x:Name="label2_Copy1" Content="Kill if older than" HorizontalAlignment="Left" Margin="195,101,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="txtTimeInt" HorizontalAlignment="Left" Height="22" Margin="293,103,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="0" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <ComboBox x:Name="cboTimeType" Grid.Column="1" HorizontalAlignment="Left" Margin="342,103,0,0" VerticalAlignment="Top" Width="118" SelectedIndex="3">
                         <ComboBoxItem Content="Days"/>
                         <ComboBoxItem Content="Hours"/>
                         <ComboBoxItem Content="Minutes"/>
                         <ComboBoxItem Content="Seconds"/>
                     </ComboBox>
-                    <CheckBox x:Name="ckbHasAgent" Content="Automation Agent" Grid.Column="1" HorizontalAlignment="Left" Margin="4,66,0,0" VerticalAlignment="Top" Height="22"/>
-                    <CheckBox x:Name="ckbEnableTarget" Content="Enable Target" Grid.Column="1" HorizontalAlignment="Left" Margin="4,86,0,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="ckbHasAgent" Content="Automation Agent" Grid.Column="1" HorizontalAlignment="Left" Margin="4,103,0,0" VerticalAlignment="Top" Height="22"/>
+                    <CheckBox x:Name="ckbEnableTarget" Content="Enable Target" Grid.Column="1" HorizontalAlignment="Left" Margin="4,123,0,0" VerticalAlignment="Top"/>
                     <Button x:Name="btnNew" Content="New" HorizontalAlignment="Left" Margin="392,10,0,0" VerticalAlignment="Top" Width="68" Grid.Column="1" Height="23" Click="btnNew_Click"/>
+                    <Button x:Name="btnSelectFolder" Content="..." HorizontalAlignment="Left" Margin="392,38,0,0" VerticalAlignment="Top" Width="68" Grid.Column="1" Height="23" Click="btnSelectFolder_Click"/>
+                    <Label x:Name="label2_Copy7" Content="Restart Path" HorizontalAlignment="Left" Margin="0,38,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="txtRestartPath" HorizontalAlignment="Left" Height="23" Margin="138,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="249" Grid.Column="1"/>
+                    <CheckBox x:Name="ckbRestart" Content="Restart After Kill" Grid.Column="1" HorizontalAlignment="Left" Margin="4,143,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="___No_Name_" Header="Options" Margin="-2,0">
@@ -110,12 +115,14 @@
                     <TextBox x:Name="txtRetryTime" HorizontalAlignment="Left" Height="23" Margin="102,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Grid.Column="1" Text="250" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
                     <Button x:Name="button" Content="Save Options" HorizontalAlignment="Left" Margin="211,269,0,0" VerticalAlignment="Top" Width="103" Click="button_Click" Grid.Column="1"/>
                     <Label x:Name="label2_Copy6" Content="Log Path" HorizontalAlignment="Left" Margin="5,140,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="txtLogPath" HorizontalAlignment="Left" Height="23" Margin="102,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="358" Grid.Column="1" Text="C:\Temp\" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
+                    <TextBox x:Name="txtLogPath" HorizontalAlignment="Left" Height="23" Margin="102,142,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="324" Grid.Column="1" Text="C:\Temp\" PreviewTextInput="txtImageName_Copy_PreviewTextInput"/>
                     <Button x:Name="btnRestart" Content="Restart PC" Grid.Column="1" HorizontalAlignment="Left" Margin="319,269,0,0" VerticalAlignment="Top" Width="103" Click="btnRestart_Click"/>
+                    <Button x:Name="btnSelectFolderLog" Content="..." HorizontalAlignment="Left" Margin="431,142,0,0" VerticalAlignment="Top" Width="29" Grid.Column="1" Height="23" Click="btnSelectFolderLog_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>
         <Label x:Name="label" Content="Targets" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="80"/>
-        <Button x:Name="btnRemove" Content="Remove" HorizontalAlignment="Left" Margin="138,292,0,0" VerticalAlignment="Top" Width="53" Click="btnRemove_Click" Height="45"/>
+        <Button x:Name="btnRemove" Content="Remove" HorizontalAlignment="Left" Margin="138,292,0,0" VerticalAlignment="Top" Width="53" Click="btnRemove_Click" Height="21"/>
+        <Button x:Name="btnDetect" Content="Detect" HorizontalAlignment="Left" Margin="138,316,0,0" VerticalAlignment="Top" Width="53" Click="btnDetect_Click" Height="21"/>
     </Grid>
 </Window>

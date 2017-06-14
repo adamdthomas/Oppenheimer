@@ -15,5 +15,8 @@ namespace Oppenheimer
         public string timeInt { get; set; }
         public string timeType { get; set; }
         public string hasAgent { get; set; }
+
+        public string willRestart { get; set; }
+        public string restartPath { get; set; }
     }
 }

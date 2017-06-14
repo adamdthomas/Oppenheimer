@@ -16,7 +16,7 @@ namespace Oppenheimer
     /// 
     public partial class MainWindow : Window
     {
-        private ContextMenu m_menu;
+
         public static char c1 = (char)10;
         public static string L = c1.ToString();
         public static int retryCount;
@@ -24,6 +24,7 @@ namespace Oppenheimer
         public string isEnabledTemp = "true";
         bool keepKilling = false;
         public int agentCycleTime = 5000;
+        public bool retryInProgress = false;
 
 
 
@@ -60,26 +61,29 @@ namespace Oppenheimer
 
             try
             {
-                System.Windows.Forms.NotifyIcon ni = new System.Windows.Forms.NotifyIcon();
 
-                string executableLocation = System.IO.Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+                WinForms.NotifyIcon ni = new WinForms.NotifyIcon();
+
+                string executableLocation = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string icoLocation = System.IO.Path.Combine(executableLocation, "favicon.ico");
 
                 ni.Icon = new System.Drawing.Icon(icoLocation);
-                this.notifier.MouseDown += new WinForms.MouseEventHandler(notifier_MouseDown);
-                this.notifier.Icon = ni.Icon;
-                this.notifier.Visible = true;
+                notifier.MouseDown += new WinForms.MouseEventHandler(notifier_MouseDown);
+                notifier.Icon = ni.Icon;
+                notifier.Visible = true;
 
+       
                 //ni.Visible = true;
-                ni.DoubleClick +=
+                notifier.DoubleClick +=
                     delegate (object sender, EventArgs args)
-                    {
-                        this.Show();
-                        this.WindowState = WindowState.Normal;
+                    { 
+                        Show();
+                        WindowState = WindowState.Normal;
+                        Activate();
+                        
                     };
             }
-            catch (Exception){}
+            catch (Exception e){}
 
         }
 
@@ -119,9 +123,11 @@ namespace Oppenheimer
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == System.Windows.WindowState.Minimized)
-                this.Hide();
+                Hide();
             base.OnStateChanged(e);
         }
+
+
 
         void notifier_MouseDown(object sender, WinForms.MouseEventArgs e)
         {
@@ -135,6 +141,11 @@ namespace Oppenheimer
         private void Menu_Open(object sender, RoutedEventArgs e)
         {
             killMain();
+        }
+
+        private void Menu_Restart(object sender, RoutedEventArgs e)
+        {
+            Restart();
         }
 
         private void Menu_Expand(object sender, RoutedEventArgs e)
@@ -161,7 +172,7 @@ namespace Oppenheimer
         {
             try
             {
-                this.Close();
+                Close();
             }
             catch (Exception) { }
         }
@@ -170,11 +181,13 @@ namespace Oppenheimer
         #region kill functions
         public void killMain()
         {
+            retryInProgress = false;
             retryCount = Convert.ToInt32(txtRetryCount.Text);
             retryDelay = Convert.ToInt32(txtRetryTime.Text);
 
             if (retryCount > 1)
             {
+                retryInProgress = true;
                 LogFromThread("Killing Targets. Will retry " + txtRetryCount.Text + " times with a delay of " + txtRetryTime.Text + " milliseconds.");
                 Thread killRetry = new Thread(retryKillApps);
                 killRetry.Start();
@@ -187,6 +200,13 @@ namespace Oppenheimer
             }
         }
 
+        public void detectMain()
+        {
+            LogFromThread("Detecting Targets...");
+            Thread detectOnce = new Thread(detectApps);
+            detectOnce.Start();
+        }
+
         public void killApps()
         {
             Thread.CurrentThread.IsBackground = true;
@@ -195,6 +215,28 @@ namespace Oppenheimer
                 if (app.IsChecked)
                 {
                     killApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
+
+                    if (!retryInProgress)
+                    {
+                        if (app.Item.willRestart.ToLower() == "true")
+                        {
+                            Process.Start(app.Item.restartPath);
+                            LogFromThread("Attempting to restart " + app.Item.name + " by opening: " + app.Item.restartPath);
+                        }
+                    }
+                   
+                }
+            }
+        }
+
+        public void detectApps()
+        {
+            Thread.CurrentThread.IsBackground = true;
+            foreach (var app in applications)
+            {
+                if (app.IsChecked)
+                {
+                    detectApp(app.Item.imagename, app.Item.timeInt, app.Item.timeType);
                 }
             }
         }
@@ -204,10 +246,14 @@ namespace Oppenheimer
             Thread.CurrentThread.IsBackground = true;
             for (int i = 0; i < retryCount; i++)
             {
+                if (i == retryCount - 1) { retryInProgress = false; }
                 LogFromThread("Retry count: " + (i+1).ToString());
                 killApps();
                 Thread.Sleep(retryDelay);
             }
+
+            
+
         }
 
         public void agentKillApps()
@@ -276,12 +322,12 @@ namespace Oppenheimer
                                 TimeSpan span = DateTime.Now.Subtract(p.StartTime);
                                 if (span.TotalSeconds > ageToKill)
                                 {
-                                    LogFromThread("Killing process " + p.ProcessName + ": " + p.Id + " Age: " + span.TotalMinutes.ToString() + " min.");
+                                    LogFromThread("Killing " + p.ProcessName + ", Process ID: " + p.Id + " Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
                                     p.Kill();
                                 }
                                 else
                                 {
-                                    LogFromThread("Skipping process " + p.ProcessName + ": " + p.Id + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                                    LogFromThread("Skipping " + p.ProcessName + ", Process ID: " + p.Id + " Not old enough; Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
                                 }
 
                             }
@@ -291,6 +337,74 @@ namespace Oppenheimer
                 }
             }
         }
+
+
+
+        public void detectApp(string ProcessName, string timeInt, string timeType)
+        {
+            double ageToKill = Utilities.ToSeconds(timeInt, timeType);
+
+            if (ProcessName.Contains(@" / "))
+            {
+                LogFromThread("Did you mean to use a forward slash in the path: " + ProcessName + "?");
+                ProcessName = "";//Ignore bad paths
+            }
+
+            if (ProcessName.Contains(@"\")) //Deal with files and folders
+            {
+
+                string lastchar = ProcessName.Substring(ProcessName.Length - 1);
+                if (lastchar != @"\")
+                {
+                    ProcessName = ProcessName + @"\";
+                }
+                //Saftey Nets:
+                if (ProcessName.ToUpper() == @"C:\" || ProcessName.ToUpper() == @"C:\PROGRAM FILES\" || ProcessName.ToUpper() == @"C:\PROGRAM FILES (X86)\" || ProcessName.ToUpper() == @"C:\PROGRAMDATA\" || ProcessName.ToUpper() == @"C:\USERS\" || ProcessName.ToUpper() == @"C:\WINDOWS\")
+                {
+                    LogFromThread("Would not be able to delete the contents of: " + ProcessName + " because it would be detrimental.");
+                }
+                else
+                {
+                    LogFromThread("Would delete the contents of: " + ProcessName);
+                    LogsFromThread(Utilities.DetectFiles(ProcessName, ageToKill));
+                }
+            }
+            else
+            {
+                if (ProcessName != "")//Deal with processes
+                {
+                    try
+                    {
+                        Process[] myProcesses;
+                        myProcesses = Process.GetProcessesByName(ProcessName);
+
+                        if (myProcesses.Length == 0)
+                        {
+                            LogFromThread("Process: " + ProcessName + ".exe not found.");
+                        }
+
+                        foreach (Process p in myProcesses)
+                        {
+
+                            TimeSpan span = DateTime.Now.Subtract(p.StartTime);
+                            if (span.TotalSeconds > ageToKill)
+                            {
+                                LogFromThread("Would kill " + p.ProcessName + ", Process ID: " + p.Id + " Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
+                            }
+                            else
+                            {
+                                LogFromThread("Would skip " + p.ProcessName + ", Process ID: " + p.Id + " Not old enough; Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
+                            }
+
+                        }
+
+                    }
+                    catch (Exception ex) { }
+                }
+            }
+        }
+
+
 
         #endregion
 
@@ -322,7 +436,7 @@ namespace Oppenheimer
                     check = "false";
                 }
 
-                Utilities.AddApp(app.Item.name, app.Item.imagename, check, app.Item.timeInt, app.Item.timeType, app.Item.hasAgent);
+                Utilities.AddApp(app.Item.name, app.Item.imagename, check, app.Item.timeInt, app.Item.timeType, app.Item.hasAgent, app.Item.willRestart, app.Item.restartPath);
             }
 
             Properties.Settings.Default.LogPath = txtLogPath.Text;
@@ -338,6 +452,9 @@ namespace Oppenheimer
 
         }
 
+
+
+
         public void loadList()
         {
             applications = new ObservableCollection<CheckedListItem<Application>>();
@@ -346,7 +463,7 @@ namespace Oppenheimer
 
             foreach (var app in apps)
             {
-                applications.Add(new CheckedListItem<Application>(new Application() { name = app.name, imagename = app.imagename, isCheckedString = app.isCheckedString, timeInt = app.timeInt, timeType = app.timeType, hasAgent = app.hasAgent}));
+                applications.Add(new CheckedListItem<Application>(new Application() { name = app.name, imagename = app.imagename, isCheckedString = app.isCheckedString, timeInt = app.timeInt, timeType = app.timeType, hasAgent = app.hasAgent, willRestart = app.willRestart, restartPath = app.restartPath }));
             }
 
             DataContext = this;
@@ -373,6 +490,11 @@ namespace Oppenheimer
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            handleList();
+        }
+
+        private void handleList()
+        {
             updateSettings();
 
             foreach (CheckedListItem<Application> item in lstApps.SelectedItems)
@@ -386,11 +508,12 @@ namespace Oppenheimer
                     cboTimeType.Text = item.Item.timeType;
                     ckbHasAgent.IsChecked = Convert.ToBoolean(item.Item.hasAgent);
                     ckbEnableTarget.IsChecked = item.IsChecked;
+                    ckbRestart.IsChecked = Convert.ToBoolean(item.Item.willRestart);
+                    txtRestartPath.Text = item.Item.restartPath;
                 }
-                catch (Exception){}
+                catch (Exception e2) { LogFromThread(e2.ToString()); }
 
             }
-            //loadList();
         }
 
         private void btnKill_Click(object sender, RoutedEventArgs e)
@@ -412,6 +535,16 @@ namespace Oppenheimer
                 checkHasAgent = "false";
             }
 
+            string checkWillRestart;
+            if (ckbRestart.IsChecked.GetValueOrDefault())
+            {
+                checkWillRestart = "true";
+            }
+            else
+            {
+                checkWillRestart = "false";
+            }
+
             string checkEnabled;
             if (ckbEnableTarget.IsChecked.GetValueOrDefault())
             {
@@ -422,7 +555,7 @@ namespace Oppenheimer
                 checkEnabled = "false";
             }
 
-            Utilities.AddApp(txtDisplayName.Text, proc, checkEnabled, txtTimeInt.Text, cboTimeType.Text, checkHasAgent);
+            Utilities.AddApp(txtDisplayName.Text, proc, checkEnabled, txtTimeInt.Text, cboTimeType.Text, checkHasAgent, checkWillRestart, txtRestartPath.Text);
             WriteToLog("Adding target: " + txtDisplayName.Text + " with process name of: " + proc + ".exe");
             loadList();
  
@@ -435,7 +568,7 @@ namespace Oppenheimer
 
             foreach (CheckedListItem<Application> item in lstApps.SelectedItems)
             {
-                Utilities.RemoveApp(item.Item.name, item.Item.imagename, item.Item.isCheckedString, item.Item.timeInt, item.Item.timeType, item.Item.hasAgent);
+                Utilities.RemoveApp(item.Item.name, item.Item.imagename, item.Item.isCheckedString, item.Item.timeInt, item.Item.timeType, item.Item.hasAgent, item.Item.willRestart, item.Item.restartPath);
                 WriteToLog("Removing target: " + item.Item.name + " with process name of: " + item.Item.imagename + ".exe");
             }
             loadList();
@@ -561,8 +694,51 @@ namespace Oppenheimer
             txtDisplayName.Text = "";
             ckbHasAgent.IsChecked = false;
             ckbEnableTarget.IsChecked = true;
+            ckbRestart.IsChecked = false;
+            txtRestartPath.Text = "";
             txtTimeInt.Text = "0";
          
+        }
+
+        private void lstApps_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            handleList();
+        }
+
+        private void btnDetect_Click(object sender, RoutedEventArgs e)
+        {
+            detectMain();
+        }
+
+        private void btnSelectFolder_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".exe";
+            dlg.Filter = "Applications (*.exe)|*.exe";
+
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            bool? result = dlg.ShowDialog();
+
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                txtRestartPath.Text = dlg.FileName;
+            }
+        }
+
+        private void btnSelectFolderLog_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new WinForms.FolderBrowserDialog();
+            dialog.ShowDialog();
+            txtLogPath.Text = dialog.SelectedPath;
         }
     }
 }

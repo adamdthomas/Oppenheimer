@@ -25,7 +25,7 @@ namespace Oppenheimer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"Chrome Browser~chrome~true~0~Seconds~false,Chrome Driver~chromedriver~true~0~Seconds~false,Excel~EXCEL.EXE~true~0~Seconds~false,Phantom JS~phantomjs~true~0~Seconds~false,Phantom JS Error~WerFault~true~0~Seconds~false,UFT Helper~HP.UFT.HelperService~true~0~Seconds~false,Internet Explorer~iexplore~true~0~Seconds~false,ALM~ALM-Client~true~0~Seconds~false,UFT Tool~UFT~true~0~Seconds~false,Auto Chrome~chrome~false~5~Minutes~true,Auto Chrome Driver~chromedriver~false~5~Minutes~true")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"Chrome Browser~chrome~true~0~Seconds~false~false~,Chrome Driver~chromedriver~true~0~Seconds~false~false~,Excel~EXCEL.EXE~true~0~Seconds~false~false~,Phantom JS~phantomjs~true~0~Seconds~false~false~,Phantom JS Error~WerFault~true~0~Seconds~false~false~,UFT Helper~HP.UFT.HelperService~true~0~Seconds~false~false~,Internet Explorer~iexplore~true~0~Seconds~false~false~,ALM~ALM-Client~true~0~Seconds~false~false~,UFT Tool~UFT~true~0~Seconds~false~false~,Auto Chrome~chrome~false~5~Minutes~true~false~,Auto Chrome Driver~chromedriver~false~5~Minutes~true~false~")]
         public string Apps {
             get {
                 return ((string)(this["Apps"]));

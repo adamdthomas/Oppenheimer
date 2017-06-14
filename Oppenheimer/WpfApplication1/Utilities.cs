@@ -32,6 +32,8 @@ namespace Oppenheimer
                     curApp.timeInt = appDetailsArray[3];
                     curApp.timeType = appDetailsArray[4];
                     curApp.hasAgent = appDetailsArray[5];
+                    curApp.willRestart = appDetailsArray[6];
+                    curApp.restartPath = appDetailsArray[7];
 
                     apps.Add(curApp);
                 }
@@ -62,6 +64,8 @@ namespace Oppenheimer
                             string iamatimeint = appDetailsArray[3];
                             string iamatimetype = appDetailsArray[4];
                             string iamanagent = appDetailsArray[5];
+                            string iamanrestart = appDetailsArray[6];
+                            string iamanrestartpath = appDetailsArray[7];
                 }
             }
             catch (Exception)
@@ -73,7 +77,7 @@ namespace Oppenheimer
             return testPassed;
         }
 
-        public static void AddApp(string displayName, string imageName, string timeInt, string timeType, string hasAgent)
+        public static void AddApp(string displayName, string imageName, string timeInt, string timeType, string hasAgent, string willRestart, string restartPath)
         {
             string appStr = Properties.Settings.Default.Apps;
             appStr = appStr.Replace(GetAppStringByDisplayName(displayName), "");
@@ -90,7 +94,7 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~true~" + timeInt + "~" + timeType + "~" + hasAgent ;
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~true~" + timeInt + "~" + timeType + "~" + hasAgent + "~" + willRestart + "~" + restartPath;
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
@@ -113,7 +117,7 @@ namespace Oppenheimer
 
                     if (displayName.ToUpper() == appDetailsArray[0].ToUpper())
                     {
-                        AppStr = appDetailsArray[0] + "~" + appDetailsArray[1] + "~" + appDetailsArray[2] + "~" + appDetailsArray[3] + "~" + appDetailsArray[4] + "~" + appDetailsArray[5];
+                        AppStr = appDetailsArray[0] + "~" + appDetailsArray[1] + "~" + appDetailsArray[2] + "~" + appDetailsArray[3] + "~" + appDetailsArray[4] + "~" + appDetailsArray[5] + "~" + appDetailsArray[6] + "~" + appDetailsArray[7];
                         break;
                     }
 
@@ -126,7 +130,7 @@ namespace Oppenheimer
             return AppStr;
         }
 
-        public static void AddApp(string displayName, string imageName, string isChecked,string timeInt, string timeType, string hasAgent)
+        public static void AddApp(string displayName, string imageName, string isChecked,string timeInt, string timeType, string hasAgent, string willRestart, string restartPath)
         {
             string appStr = Properties.Settings.Default.Apps;
             try
@@ -148,18 +152,18 @@ namespace Oppenheimer
 
             if (!appString.Contains(displayName))
             {
-                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~" + isChecked + "~" + timeInt + "~" + timeType + "~" + hasAgent;
+                Properties.Settings.Default.Apps = appString + firstDelim + displayName + "~" + imageName + "~" + isChecked + "~" + timeInt + "~" + timeType + "~" + hasAgent + "~" + willRestart + "~" + restartPath;
                 Properties.Settings.Default.Save();
                 Properties.Settings.Default.Reload();
             }
 
         }
 
-        public static void RemoveApp(string displayName, string imageName, string isCheckedString, string timeInt, string timeType, string hasAgent)
+        public static void RemoveApp(string displayName, string imageName, string isCheckedString, string timeInt, string timeType, string hasAgent, string willRestart, string restartPath)
         {
             string appString = Properties.Settings.Default.Apps;
-            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent + ",", "");
-            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent, "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent + "~" + willRestart + "~" + restartPath + ",", "");
+            appString = appString.Replace(displayName + "~" + imageName + "~" + isCheckedString + "~" + timeInt + "~" + timeType + "~" + hasAgent + "~" + willRestart + "~" + restartPath, "");
             Properties.Settings.Default.Apps = appString;
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();
@@ -239,6 +243,51 @@ namespace Oppenheimer
                 }
             }
             catch (Exception e){
+                deleteInfo.Add("Error: " + e.ToString());
+            }
+
+            return deleteInfo;
+        }
+
+
+        public static List<string> DetectFiles(string Path, double ageToKill)
+        {
+
+            List<string> deleteInfo = new List<string>();
+
+            try
+            {
+                System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
+                foreach (FileInfo file in directory.GetFiles())
+                {
+
+                    TimeSpan span = DateTime.Now.Subtract(file.LastWriteTime);
+                    if (span.TotalSeconds > ageToKill)
+                    {
+                        deleteInfo.Add("Would delete file: " + file.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                      //  file.Delete();
+                    }
+                    else
+                    {
+                        deleteInfo.Add("Would skip file: " + file.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                    }
+                }
+                foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
+                {
+                    TimeSpan span = DateTime.Now.Subtract(currentDirectory.LastWriteTime);
+                    if (span.TotalSeconds > ageToKill)
+                    {
+                        deleteInfo.Add("Would delete folder: " + currentDirectory.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                      //  currentDirectory.Delete(true);
+                    }
+                    else
+                    {
+                        deleteInfo.Add("Would Skip folder: " + currentDirectory.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
                 deleteInfo.Add("Error: " + e.ToString());
             }
 
