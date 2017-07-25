@@ -178,17 +178,23 @@ namespace Oppenheimer
 
         public static void CreateLogFile()
         {
-            LogFullPath = LogPath + "Oppenheimer_Log.txt";
-            System.IO.Directory.CreateDirectory(LogPath);
-            if (!File.Exists(LogFullPath))
+            LogFullPath = LogPath + @"\Oppenheimer_Log.txt";
+            LogFullPath = LogFullPath.Replace(@"\\", @"\");
+            try
             {
-                // Create a file to write to. 
-                using (StreamWriter sw = File.CreateText(LogFullPath))
+                Directory.CreateDirectory(LogPath);
+                if (!File.Exists(LogFullPath))
                 {
-                    sw.WriteLine(DateTime.Now.ToString() + " - Log file initiated.");
-                    sw.Close();
+                // Create a file to write to. 
+                    using (StreamWriter sw = File.CreateText(LogFullPath))
+                    {
+                        sw.WriteLine(DateTime.Now.ToString() + " - Log file initiated.");
+                        sw.Close();
+                    }
                 }
             }
+            catch (Exception){}
+           
         }   
 
         public static void LogToFile(string Message)
@@ -212,38 +218,44 @@ namespace Oppenheimer
 
             List<string> deleteInfo = new List<string>();
 
-            try
+            System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
+            foreach (FileInfo file in directory.GetFiles())
             {
-                System.IO.DirectoryInfo directory = new DirectoryInfo(Path);
-                foreach (FileInfo file in directory.GetFiles())
+                TimeSpan span = DateTime.Now.Subtract(file.LastWriteTime);
+                if (span.TotalSeconds > ageToKill)
                 {
-
-                    TimeSpan span = DateTime.Now.Subtract(file.LastWriteTime);
-                    if (span.TotalSeconds > ageToKill)
-                    {
-                        deleteInfo.Add("Deleting file: " + file.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
-                        file.Delete();
-                    }else
-                    {
-                        deleteInfo.Add("Skipping file: " + file.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
-                    }
+                    deleteInfo.Add("Deleting file: " + file.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                try { 
+                    file.Delete();
                 }
-                foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
+                catch (Exception e)
                 {
-                    TimeSpan span = DateTime.Now.Subtract(currentDirectory.LastWriteTime);
-                    if (span.TotalSeconds > ageToKill)
-                    {
-                        deleteInfo.Add("Deleting folder: " + currentDirectory.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
-                        currentDirectory.Delete(true);
-                    }
-                    else
-                    {
-                        deleteInfo.Add("Skipping folder: " + currentDirectory.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
-                    }
+                    deleteInfo.Add("Error: " + e.ToString());
+                }
+            }else
+                {
+                    deleteInfo.Add("Skipping file: " + file.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
                 }
             }
-            catch (Exception e){
-                deleteInfo.Add("Error: " + e.ToString());
+            foreach (DirectoryInfo currentDirectory in directory.GetDirectories())
+            {
+                TimeSpan span = DateTime.Now.Subtract(currentDirectory.LastWriteTime);
+                if (span.TotalSeconds > ageToKill)
+                {
+                    deleteInfo.Add("Deleting folder: " + currentDirectory.FullName + " Age: " + span.TotalMinutes.ToString() + " min.");
+                    try
+                    {
+                        currentDirectory.Delete(true);
+                    }
+                    catch (Exception e)
+                    {
+                        deleteInfo.Add("Error: " + e.ToString());
+                    }
+                }
+                else
+                {
+                    deleteInfo.Add("Skipping folder: " + currentDirectory.FullName + " Not old enough; Age: " + span.TotalMinutes.ToString() + " min.");
+                }
             }
 
             return deleteInfo;

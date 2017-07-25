@@ -449,6 +449,8 @@ namespace Oppenheimer
             Properties.Settings.Default.Save();
             Properties.Settings.Default.Reload();
 
+            OptionsSaved();
+
 
         }
 
@@ -514,6 +516,7 @@ namespace Oppenheimer
                 catch (Exception e2) { LogFromThread(e2.ToString()); }
 
             }
+            TargetSaved();
         }
 
         private void btnKill_Click(object sender, RoutedEventArgs e)
@@ -558,7 +561,10 @@ namespace Oppenheimer
             Utilities.AddApp(txtDisplayName.Text, proc, checkEnabled, txtTimeInt.Text, cboTimeType.Text, checkHasAgent, checkWillRestart, txtRestartPath.Text);
             WriteToLog("Adding target: " + txtDisplayName.Text + " with process name of: " + proc + ".exe");
             loadList();
- 
+
+            TargetSaved();
+
+
 
         }
 
@@ -583,13 +589,13 @@ namespace Oppenheimer
 
         private void btnOpenLog_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("notepad.exe", Properties.Settings.Default.LogPath + "Oppenheimer_Log.txt");
-            WriteToLog("Log file opened: " + Properties.Settings.Default.LogPath + "Oppenheimer_Log.txt");
+            Process.Start("notepad.exe", Properties.Settings.Default.LogPath + @"\Oppenheimer_Log.txt");
+            WriteToLog("Log file opened: " + Properties.Settings.Default.LogPath + @"\Oppenheimer_Log.txt");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            updateSettings();
+            
         }
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
@@ -604,9 +610,7 @@ namespace Oppenheimer
 
         private void ckbOpenMinimized_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.MinOnOpen = ckbOpenMinimized.IsChecked.GetValueOrDefault();
-            Properties.Settings.Default.Save();
-            Properties.Settings.Default.Reload();
+            OptionsChanged();
         }
 
         private void btnExport_Click(object sender, RoutedEventArgs e)
@@ -675,7 +679,7 @@ namespace Oppenheimer
 
         private void ckbAgentsOnOpen_Click(object sender, RoutedEventArgs e)
         {
-            updateSettings();
+            OptionsChanged();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -739,6 +743,150 @@ namespace Oppenheimer
             var dialog = new WinForms.FolderBrowserDialog();
             dialog.ShowDialog();
             txtLogPath.Text = dialog.SelectedPath;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Shutdown();
+        }
+
+        public void Shutdown()
+        {
+            notifier.Visible = false;
+            updateSettings();
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        public void OptionsChanged()
+        {
+            try
+            {
+                btnSaveOptions.Content = "Save Options";
+            }
+            catch (Exception)
+            {
+
+            }
+           
+            
+  
+        }
+
+        public void OptionsSaved()
+        {
+
+            try
+            {
+                btnSaveOptions.Content = "Options Saved";
+            }
+            catch (Exception)
+            {
+
+            }
+
+        }
+
+
+        public void TargetChanged()
+        {
+            try
+            {
+                
+                btnAdd.Content = "Save*";
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+
+        }
+
+        public void TargetSaved()
+        {
+
+            try
+            {
+                btnAdd.Content = "Saved";
+            }
+            catch (Exception)
+            {
+
+            }
+
+        }
+
+        private void txtCycle_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OptionsChanged();
+        }
+
+        private void cboTimeTypeCycle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            OptionsChanged();
+        }
+
+        private void txtRetryCount_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OptionsChanged();
+        }
+
+        private void txtRetryTime_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OptionsChanged();
+        }
+
+        private void txtLogPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OptionsChanged();
+        }
+
+        private void txtDisplayName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TargetChanged();
+        }
+
+        private void txtRestartPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void txtImageName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void txtTimeInt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void cboTimeType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void ckbHasAgent_Click(object sender, RoutedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void ckbEnableTarget_Click(object sender, RoutedEventArgs e)
+        {
+            TargetChanged();
+
+        }
+
+        private void ckbRestart_Click(object sender, RoutedEventArgs e)
+        {
+            TargetChanged();
+
         }
     }
 }
