@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Oppenheimer"
         mc:Ignorable="d"
         
-        Title="Oppenheimer v2.0.2" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing" Closed="Window_Closed" >
+        Title="Oppenheimer v2.0.2" Height="385" Width="712.308" Icon="favicon.ico" Closing="Window_Closing" Closed="Window_Closed" Topmost="True" >
 
     <Window.Resources>
         <ContextMenu x:Key="NotifierContextMenu"

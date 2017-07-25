@@ -172,7 +172,7 @@ namespace Oppenheimer
         {
             try
             {
-                Close();
+                Shutdown();
             }
             catch (Exception) { }
         }
@@ -755,6 +755,7 @@ namespace Oppenheimer
             notifier.Visible = false;
             updateSettings();
             System.Windows.Application.Current.Shutdown();
+            Environment.Exit(0);
         }
 
         public void OptionsChanged()
