@@ -304,39 +304,59 @@ namespace Oppenheimer
             }
             else
             {
+                string tempProcessName = "";
+                string tempProcessID = "";
+
+
                 if (ProcessName != "")//Deal with processes
                 {
-                    try
+
+
+
+                    Process[] myProcesses;
+                    myProcesses = Process.GetProcessesByName(ProcessName);
+
+                    if (myProcesses.Length == 0)
                     {
-                            Process[] myProcesses;
-                            myProcesses = Process.GetProcessesByName(ProcessName);
-
-                            if (myProcesses.Length == 0)
-                            {
-                                LogFromThread("Process: " + ProcessName + ".exe not found.");
-                            }
-
-                            foreach (Process p in myProcesses)
-                            {
-
-                                TimeSpan span = DateTime.Now.Subtract(p.StartTime);
-                                if (span.TotalSeconds > ageToKill)
-                                {
-                                    LogFromThread("Killing " + p.ProcessName + ", Process ID: " + p.Id + " Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
-                                    p.Kill();
-                                }
-                                else
-                                {
-                                    LogFromThread("Skipping " + p.ProcessName + ", Process ID: " + p.Id + " Not old enough; Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
-                                }
-
-                            }
-
+                        LogFromThread("Process: " + ProcessName + ".exe not found.");
                     }
-                    catch (Exception ex) { }
+
+                    foreach (Process p in myProcesses)
+                    {
+                        tempProcessID = p.Id.ToString();
+                        tempProcessName = p.ProcessName;
+
+
+                        try
+                        {
+                            TimeSpan span = DateTime.Now.Subtract(p.StartTime);
+                            if (span.TotalSeconds > ageToKill)
+                            {
+                                LogFromThread("Killing " + p.ProcessName + ", Process ID: " + p.Id + " Age: " + span.ToString(@"hh\h\:mm\m\:ss\s"));
+                                p.Kill();
+
+
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                            LogFromThread("Access Denied: Could not kill " + tempProcessName + ", Process ID: " + tempProcessID);
+
+                        }
+                    }
                 }
-            }
-        }
+                else
+                {
+                    LogFromThread("Skipping " + tempProcessName + ", Process ID: " + tempProcessID + " Not old enough.");
+                }
+
+             }
+
+          }
+                   
+
+        
 
 
 
